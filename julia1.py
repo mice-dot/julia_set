@@ -13,12 +13,15 @@ def show_greyscale(output_raw, width, height, max_iterations):
     # convert our output to PIL-compatible input
     # scale to [0...255]
     max_iterations = float(max(output_raw))
-    print(max_iterations)
+    # print(max_iterations)
     scale_factor = float(max_iterations)
     scaled = [int(o / scale_factor * 255) for o in output_raw]
+    # print(scaled[500000:500030])
     output = array.array('B', scaled)  # array of unsigned ints
+    # print(output[500000:500030])
+    # print(max(output))
     # display with PIL
-    im = Image.new("L", (width, width))
+    im = Image.new("L", (width, height))
     # EXPLAIN RAW L 0 -1
     im.frombytes(output.tobytes(), "raw", "L", 0, -1)
     im.show()

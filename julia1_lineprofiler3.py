@@ -1,5 +1,13 @@
 """Julia set generator without optional PIL-based image drawing"""
 import time
+from functools import wraps
+
+if 'line_profiler' not in dir() and 'profile' not in dir():
+    def profile(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            return func(*args, **kwargs)
+        return inner
 
 # area of complex space to investigate
 x1, x2, y1, y2 = -1.8, 1.8, -1.8, 1.8
@@ -15,7 +23,7 @@ def calculate_z_serial_purepython(maxiter, zs, cs):
         z = zs[i]
         c = cs[i]
         while n < maxiter and abs(z) < 2:
-            z = z * z + c
+            z = z**2 + c
             n += 1
         output[i] = n
     return output
@@ -54,6 +62,10 @@ def calc_pure_python(draw_output, desired_width, max_iterations):
     output = calculate_z_serial_purepython(max_iterations, zs, cs)
     end_time = time.time()
     secs = end_time - start_time
+    ma = max(output)
+    mi = min(output)
+    print(f"The output min value is {mi}. The min value counting in output is {output.count(mi)}.")
+    print(f"The output max value is {ma}. The max value counting in output is {output.count(ma)}.")
     print(calculate_z_serial_purepython.__name__ + " took", secs, "seconds")
 
     assert sum(output) == 33219980  # this sum is expected for 1000^2 grid with 300 iterations
