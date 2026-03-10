@@ -1,5 +1,0 @@
-.DS_Store
-.coverage
-.ipynb_checkpoints
-.pytest_cache
-__pycache__
