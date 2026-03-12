@@ -25,7 +25,7 @@ def calculate_z_serial_purepython(maxiter, x, y, d_w):
                     z = z * z + c
                     n += 1
                 output[i] = n
-                i = i+1
+                i = i + 1
     time.sleep(0.25)
     return output
 
@@ -61,7 +61,6 @@ def calc_pure_python(draw_output, desired_width, max_iterations):
     print(calculate_z_serial_purepython.__name__ + " took", secs, "seconds")
 
     assert sum(output) == 33219980  # this sum is expected for 1000^2 grid with 300 iterations
-
 
 
 # Calculate the Julia set using a pure Python solution with

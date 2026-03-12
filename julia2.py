@@ -28,22 +28,87 @@ def show_greyscale(output_raw, width, height, max_iterations):
 
 
 def show_false_greyscale(output_raw, width, height, max_iterations):
-    """Convert list to array, show using PIL"""
-    # convert our output to PIL-compatible input
-    assert width * height == len(output_raw)  # sanity check our 1D array and desired 2D form
-    # rescale output_raw to be in the inclusive range [0..255]
-    max_value = float(max(output_raw))
-    output_raw_limited = [int(float(o) / max_value * 255) for o in output_raw]
-    # create a slightly fancy colour map that shows colour changes with
-    # increased contrast (thanks to John Montgomery)
-    output_rgb = ((o + (256 * o) + (256 ** 2) * o) * 16 for o in output_raw_limited)  # fancier
-    output_rgb = array.array('I', output_rgb)  # array of unsigned ints (size is platform specific)
-    # display with PIL/pillow
-    im = Image.new("RGB", (width, height))
-    # EXPLAIN RGBX L 0 -1
-    im.frombytes(output_rgb.tobytes(), "raw", "RGBX", 0, -1)
-    im.save("julia1.png")
-    im.show()
+    """
+    Pillow Image.frombytes() 範例
+
+    需求
+    1. RGB 模式
+    2. raw data 值 0 ~ 300
+    3. 0 → 白色
+    4. 300 → 黑色
+    5. 中間值使用彩虹七色
+    6. 影像大小 1000x1000
+    """
+
+# ------------------------------------
+# 定義彩虹七色
+# ------------------------------------
+# 彩虹順序
+# Red → Orange → Yellow → Green → Blue → Indigo → Violet
+    rainbow_colors = [
+        (255, 0, 0),     # Red
+        (255, 127, 0),   # Orange
+        (255, 255, 0),   # Yellow
+        (0, 255, 0),     # Green
+        (0, 0, 255),     # Blue
+        (75, 0, 130),    # Indigo
+        (148, 0, 211)    # Violet
+    ]
+
+# 將 0~300 分成 7 段
+    STEP = max_iterations / len(rainbow_colors)
+
+# ------------------------------------
+# 建立 bytearray 儲存 RGB bytes
+# ------------------------------------
+    pixel_bytes = bytearray()
+
+# ------------------------------------
+# 產生測試 raw data
+# 這裡使用 x+y 做漸層示範
+# ------------------------------------
+    for value in output_raw:
+
+        # ------------------------------
+        # 特殊值處理
+        # ------------------------------
+        if value == 0:
+            r, g, b = (255, 255, 255)  # 白色
+
+        elif value >= 300:
+            r, g, b = (0, 0, 0)        # 黑色
+
+        else:
+            # --------------------------
+            # 計算彩虹階段
+            # --------------------------
+            index = int(value / STEP)
+
+            # 防止 index 超出範圍
+            if index >= len(rainbow_colors):
+                index = len(rainbow_colors) - 1
+
+            r, g, b = rainbow_colors[index]
+
+        # ------------------------------
+        # 加入 RGB bytes
+        # ------------------------------
+        pixel_bytes.extend([r, g, b])
+
+# ------------------------------------
+# 使用 Image.frombytes 建立影像
+# ------------------------------------
+    img = Image.frombytes(
+        mode="RGB",
+        size=(width, height),
+        data=bytes(pixel_bytes)
+    )
+
+# ------------------------------------
+# 儲存與顯示影像
+# ------------------------------------
+    img.save("julia2.png")
+    img.show()
 
 
 def calculate_z_serial_purepython(maxiter, zs, cs):

@@ -5,10 +5,15 @@ build/
 dist/
 wheels/
 *.egg-info
-.DS_Store
-.coverage
-.ipynb_checkpoints/
-.pytest_cache/
 
 # Virtual environments
 .venv
+
+# Coverage tool create
+.coverage
+
+# pytest tool create
+.pytest_cache/
+
+# Jupyter Notebook create
+.ipynb_checkpoints/
